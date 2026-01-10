@@ -12,7 +12,7 @@ from cryptography.hazmat.backends import default_backend # <--- THE FIX IS HERE
 
 # --- CONFIGURATION ---
 SERVER_PUBLIC_SIGNING_KEY = b"""-----BEGIN PUBLIC KEY-----
-PASTE YOUR ED25519 PUBLIC KEY HERE
+MCowBQYDK2VwAyEA3EXtBaOd/gKtfM/GxYgiDDbUvAaPSikSto3CwUVlIV0=
 -----END PUBLIC KEY-----"""
 
 class HandshakeState(Enum):
