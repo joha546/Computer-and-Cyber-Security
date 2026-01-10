@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  server:
+    image: ubuntu:20.04
+    container_name: chat-server
+    hostname: chat-server
+    networks:
+      - chat-network
+    volumes:
+      - ./server:/app
+    command: tail -f /dev/null
+    stdin_open: true
+    tty: true
+
+  client:
+    image: ubuntu:20.04
+    container_name: chat-client
+    hostname: chat-client
+    networks:
+      - chat-network
+    volumes:
+      - ./client:/app
+    command: tail -f /dev/null
+    stdin_open: true
+    tty: true
+
+networks:
+  chat-network:
+    driver: bridge
