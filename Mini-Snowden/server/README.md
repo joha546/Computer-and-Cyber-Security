@@ -62,13 +62,13 @@ This creates the necessary `Ed25519` and `X25519` key pairs in the `server/keys/
 From the project root:
 
 ```bash
-docker-compose build
+docker compose build
 ```
 
 ### 3. Start Server Container
 
 ```bash
-docker-compose up -d server
+docker compose up -d server
 ```
 
 The server listens on **port 9999** and restores messages from backups if available.
@@ -78,7 +78,7 @@ The server listens on **port 9999** and restores messages from backups if availa
 Use the corresponding client container to connect:
 
 ```bash
-docker-compose run --rm client
+docker compose run --rm client
 ```
 
 Follow the prompt to enter your username. All messages are encrypted end-to-end.
@@ -120,4 +120,5 @@ Follow the prompt to enter your username. All messages are encrypted end-to-end.
 * [ChaCha20Poly1305 AEAD](https://en.wikipedia.org/wiki/Salsa20#ChaCha20)
 * [X25519 Key Exchange](https://cr.yp.to/ecdh.html)
 * [Docker Compose Documentation](https://docs.docker.com/compose/)
+
 
