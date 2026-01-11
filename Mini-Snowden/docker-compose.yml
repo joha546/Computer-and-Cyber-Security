@@ -2,26 +2,26 @@ version: '3.8'
 
 services:
   server:
-    image: ubuntu:20.04
+    build: ./server
     container_name: chat-server
     hostname: chat-server
     networks:
       - chat-network
     volumes:
-      - ./server:/app
-    command: tail -f /dev/null
+      - ./server:/app:cached
+    ports:
+      - "9999:9999"
     stdin_open: true
     tty: true
 
   client:
-    image: ubuntu:20.04
+    build: ./client
     container_name: chat-client
     hostname: chat-client
     networks:
       - chat-network
     volumes:
-      - ./client:/app
-    command: tail -f /dev/null
+      - ./client:/app:cached
     stdin_open: true
     tty: true
 
