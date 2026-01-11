@@ -3,12 +3,13 @@ import struct
 import threading
 import sys
 from enum import Enum
+from datetime import datetime
 from cryptography.hazmat.primitives.asymmetric import x25519, ed25519
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
 from cryptography.exceptions import InvalidSignature, InvalidTag
-from cryptography.hazmat.backends import default_backend # <--- THE FIX IS HERE
+from cryptography.hazmat.backends import default_backend
 
 # --- CONFIGURATION ---
 SERVER_PUBLIC_SIGNING_KEY = b"""-----BEGIN PUBLIC KEY-----
@@ -19,6 +20,13 @@ class HandshakeState(Enum):
     AWAITING_SERVER_HANDSHAKE = 1
     AWAITING_CLIENT_EPHEMERAL_SEND = 2
     ESTABLISHED = 3
+
+class MessageType(Enum):
+    CHAT = 1
+    SYSTEM = 2
+    JOIN = 3
+    LEAVE = 4
+    HISTORY = 5  # New message type for chat history
 
 class SecureChatClient:
     def __init__(self, host='chat-server', port=9999):
@@ -123,7 +131,6 @@ class SecureChatClient:
             self.send_counter += 1
             
             ciphertext = self.aead.encrypt(nonce, plaintext, None)
-            # Need to review
             counter = self.send_counter - 1
             msg_to_send = (
                 struct.pack('>Q', counter) +
@@ -147,10 +154,8 @@ class SecureChatClient:
 
                 if counter <= self.recv_counter:
                     print(f"\n[SYSTEM] Replay attack detected! Ignoring message.")
-                    # For simplicity, disconnect on replay attempt
                     raise Exception("Replay attack detected")
 
-                # Need review
                 length_data = self._recv_all(4)
                 if not length_data:
                     break
@@ -166,7 +171,12 @@ class SecureChatClient:
                 message_type = MessageType(struct.unpack('>B', plaintext[0:1])[0])
                 message = plaintext[1:].decode('utf-8')
                 
-                if message_type == MessageType.SYSTEM:
+                if message_type == MessageType.HISTORY:
+                    # Display chat history
+                    print("\n--- Chat History ---")
+                    print(message)
+                    print("--------------------")
+                elif message_type == MessageType.SYSTEM:
                     print(f"\n[SYSTEM] {message}")
                 elif message_type == MessageType.CHAT:
                     print(f"\n{message}")
@@ -219,13 +229,6 @@ class SecureChatClient:
             pass
         finally:
             self.disconnect()
-
-# Re-using MessageType from Phase 1
-class MessageType(Enum):
-    CHAT = 1
-    SYSTEM = 2
-    JOIN = 3
-    LEAVE = 4
 
 if __name__ == "__main__":
     if len(sys.argv) > 1: host = sys.argv[1]

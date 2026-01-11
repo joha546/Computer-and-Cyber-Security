@@ -1,1 +1,4 @@
 *.pem
+server/src/__pycache__/
+server/backups/
+server/data/
